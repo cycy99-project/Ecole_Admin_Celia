@@ -34,9 +34,10 @@
             <label>De<input type="time" name="heure_debut" required></label>
             <label>À<input type="time" name="heure_fin" required></label>
             <label>Durée (min)<input type="number" name="duration_minutes" value="15" min="5" max="180" step="5"></label>
+            <label>Libellé (optionnel)<input type="text" name="label" maxlength="255" placeholder="Ex: salle B"></label>
             <button type="submit" class="btn btn-primary">Générer</button>
         </form>
-        <p class="muted small">Crée des créneaux consécutifs entre les deux heures (existants ignorés).</p>
+        <p class="muted small">Crée des créneaux consécutifs entre les deux heures (existants ignorés). Le libellé est appliqué à tous les nouveaux créneaux.</p>
     </details>
 </section>
 

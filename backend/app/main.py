@@ -285,6 +285,7 @@ def admin_add_bulk(
     heure_debut: str = Form(...),
     heure_fin: str = Form(...),
     duration_minutes: int = Form(15),
+    label: Optional[str] = Form(None),
     db: Session = Depends(get_db),
     admin: Admin = Depends(require_admin),
 ):
@@ -296,12 +297,13 @@ def admin_add_bulk(
     if end <= start:
         raise HTTPException(status_code=400, detail="Heure de fin après l'heure de début")
     duration = max(5, min(180, int(duration_minutes)))
+    label_clean = (label.strip() if label else None) or None
     cur = start
     added = 0
     while cur + timedelta(minutes=duration) <= end:
         existing = db.query(Slot).filter(Slot.start_at == cur).first()
         if not existing:
-            db.add(Slot(start_at=cur, duration_minutes=duration))
+            db.add(Slot(start_at=cur, duration_minutes=duration, label=label_clean))
             added += 1
         cur = cur + timedelta(minutes=duration)
     if added:
