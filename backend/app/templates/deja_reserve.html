@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Créneau déjà réservé{% endblock %}
+
+{% block content %}
+<section class="confirm-card error-card">
+    <div class="confirm-icon">⚠️</div>
+    <h1>Ce créneau vient d'être réservé</h1>
+    <p>Le créneau de <strong>{{ slot.start_at|heure }}</strong> n'est plus disponible.</p>
+    <p class="muted">Veuillez en choisir un autre.</p>
+    <a href="/" class="btn btn-primary">Retour au planning</a>
+</section>
+{% endblock %}

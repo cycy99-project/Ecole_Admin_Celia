@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Rendez-vous confirmé{% endblock %}
+
+{% block content %}
+<section class="confirm-card">
+    <div class="confirm-icon">✅</div>
+    <h1>Rendez-vous confirmé</h1>
+    <p class="confirm-line">
+        <strong>{{ booking.child_first_name }} {{ booking.child_last_name }}</strong>
+    </p>
+    <p class="confirm-line">
+        {{ slot.start_at|jour }}<br>
+        à <strong>{{ slot.start_at|heure }}</strong>
+        <span class="muted"> · {{ slot.duration_minutes }} min</span>
+    </p>
+    <p class="muted small">Pensez à noter cette information. Vous pouvez fermer cette page.</p>
+    <a href="/" class="btn btn-ghost">Retour au planning</a>
+</section>
+{% endblock %}

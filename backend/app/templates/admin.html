@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Tableau de bord{% endblock %}
+
+{% block content %}
+<section class="hero hero-admin">
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Bienvenue {{ admin.username }}. Gérez ici vos créneaux et les réservations des parents.</p>
+    <div class="kpis">
+        <div class="kpi"><span class="kpi-num">{{ nb_total }}</span><span class="kpi-lbl">créneaux</span></div>
+        <div class="kpi kpi-ok"><span class="kpi-num">{{ nb_libres }}</span><span class="kpi-lbl">libres</span></div>
+        <div class="kpi kpi-warn"><span class="kpi-num">{{ nb_reserved }}</span><span class="kpi-lbl">réservés</span></div>
+    </div>
+    <div class="admin-actions">
+        <a href="/admin/password" class="btn btn-ghost">Changer mon mot de passe</a>
+    </div>
+</section>
+
+<section class="admin-add">
+    <details>
+        <summary><strong>➕ Ajouter un créneau</strong></summary>
+        <form method="post" action="/admin/slots" class="hform">
+            <label>Date<input type="date" name="date" required></label>
+            <label>Heure<input type="time" name="heure" required></label>
+            <label>Durée (min)<input type="number" name="duration_minutes" value="15" min="5" max="180" step="5"></label>
+            <label>Libellé (optionnel)<input type="text" name="label" maxlength="255" placeholder="Ex: salle B"></label>
+            <button type="submit" class="btn btn-primary">Ajouter</button>
+        </form>
+    </details>
+
+    <details>
+        <summary><strong>📅 Ajouter plusieurs créneaux d'un coup</strong></summary>
+        <form method="post" action="/admin/slots/bulk" class="hform">
+            <label>Date<input type="date" name="date" required></label>
+            <label>De<input type="time" name="heure_debut" required></label>
+            <label>À<input type="time" name="heure_fin" required></label>
+            <label>Durée (min)<input type="number" name="duration_minutes" value="15" min="5" max="180" step="5"></label>
+            <button type="submit" class="btn btn-primary">Générer</button>
+        </form>
+        <p class="muted small">Crée des créneaux consécutifs entre les deux heures (existants ignorés).</p>
+    </details>
+</section>
+
+{% if not days %}
+    <div class="empty-state">
+        <p>Aucun créneau pour le moment. Utilisez les formulaires ci-dessus pour en ajouter.</p>
+    </div>
+{% endif %}
+
+{% for day in days %}
+    <section class="day-card">
+        <h2 class="day-title">{{ day.label }}</h2>
+        <div class="slot-list">
+            {% for slot in day.slots %}
+                <div class="slot-row {% if slot.is_booked %}is-booked{% endif %}">
+                    <div class="slot-row-time">
+                        {{ slot.start_at|heure }}
+                        <span class="muted small"> · {{ slot.duration_minutes }} min</span>
+                        {% if slot.label %}<span class="badge">{{ slot.label }}</span>{% endif %}
+                    </div>
+                    <div class="slot-row-status">
+                        {% if slot.is_booked %}
+                            <span class="status status-booked">Réservé : <strong>{{ slot.booking.child_first_name }} {{ slot.booking.child_last_name }}</strong></span>
+                        {% else %}
+                            <span class="status status-free">Libre</span>
+                        {% endif %}
+                    </div>
+                    <div class="slot-row-actions">
+                        {% if slot.is_booked %}
+                            <form method="post" action="/admin/bookings/{{ slot.booking.id }}/cancel" onsubmit="return confirm('Annuler la réservation de {{ slot.booking.child_first_name }} {{ slot.booking.child_last_name }} ?');">
+                                <button type="submit" class="btn btn-ghost btn-sm">Annuler</button>
+                            </form>
+                        {% endif %}
+                        <form method="post" action="/admin/slots/{{ slot.id }}/delete" onsubmit="return confirm('Supprimer ce créneau{% if slot.is_booked %} (et la réservation associée){% endif %} ?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endfor %}
+{% endblock %}

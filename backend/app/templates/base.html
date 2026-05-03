@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2563eb">
+    <title>{% block title %}Rendez-vous parents{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header class="topbar">
+        <a href="/" class="brand">
+            <span class="logo">📚</span>
+            <span>Rendez-vous parents</span>
+        </a>
+        <nav>
+            {% if admin %}
+                <a href="/admin" class="nav-link">Tableau de bord</a>
+                <form action="/admin/logout" method="post" class="inline-form">
+                    <button type="submit" class="link-btn">Se déconnecter</button>
+                </form>
+            {% else %}
+                <a href="/admin/login" class="nav-link nav-discreet">Espace enseignant</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">
+        <small>Application de prise de rendez-vous parents-enseignant</small>
+    </footer>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Réserver un rendez-vous{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Prendre un rendez-vous</h1>
+    <p class="subtitle">Choisissez un créneau libre dans le planning ci-dessous puis renseignez le prénom et le nom de votre enfant.</p>
+</section>
+
+{% if not days %}
+    <div class="empty-state">
+        <p>Aucun créneau n'est proposé pour le moment.</p>
+        <p>L'enseignante publiera prochainement de nouvelles disponibilités.</p>
+    </div>
+{% endif %}
+
+{% for day in days %}
+    <section class="day-card">
+        <h2 class="day-title">{{ day.label }}</h2>
+        <div class="slot-grid">
+            {% for slot in day.slots %}
+                {% set booked = slot.is_booked %}
+                <div class="slot {% if booked %}slot-booked{% else %}slot-free{% endif %}"
+                     data-slot-id="{{ slot.id }}">
+                    <div class="slot-time">{{ slot.start_at|heure }}<span class="slot-duration"> · {{ slot.duration_minutes }} min</span></div>
+                    {% if slot.label %}<div class="slot-label">{{ slot.label }}</div>{% endif %}
+                    {% if booked %}
+                        <div class="slot-booked-name">
+                            🔒 {{ slot.booking.child_first_name }} {{ slot.booking.child_last_name }}
+                        </div>
+                    {% else %}
+                        <button type="button" class="btn btn-primary slot-reserve-btn"
+                                data-slot-id="{{ slot.id }}"
+                                data-slot-time="{{ slot.start_at|heure }}"
+                                data-slot-day="{{ day.label }}">
+                            Réserver
+                        </button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endfor %}
+
+<dialog id="reserveDialog" class="modal">
+    <form method="post" id="reserveForm" class="modal-form">
+        <h3>Confirmer la réservation</h3>
+        <p class="modal-subtitle">
+            <strong id="dlgDay"></strong> à <strong id="dlgTime"></strong>
+        </p>
+        <label>
+            Prénom de l'enfant
+            <input type="text" name="child_first_name" required maxlength="100" autocomplete="given-name">
+        </label>
+        <label>
+            Nom de l'enfant
+            <input type="text" name="child_last_name" required maxlength="100" autocomplete="family-name">
+        </label>
+        <p class="warning">⚠️ Une fois confirmée, la réservation ne pourra plus être annulée par vos soins.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" id="dlgCancel">Annuler</button>
+            <button type="submit" class="btn btn-primary">Confirmer</button>
+        </div>
+    </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/app.js"></script>
+{% endblock %}
