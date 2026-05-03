@@ -1,0 +1,18 @@
+{
+  "name": "Rendez-vous parents",
+  "short_name": "RDV École",
+  "description": "Prise de rendez-vous parents / enseignant",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

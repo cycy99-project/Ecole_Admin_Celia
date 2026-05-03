@@ -374,14 +374,58 @@ input:focus {
 
 /* Mobile */
 @media (max-width: 600px) {
-    .hero h1 { font-size: 1.5rem; }
+    .hero h1 { font-size: 1.4rem; }
+    .hero .subtitle { font-size: 0.95rem; }
+    .topbar { padding: 8px 12px; gap: 8px; }
+    .brand { font-size: 0.95rem; }
+    .container { padding: 14px 10px 32px; }
+    .day-card { padding: 12px; margin-bottom: 14px; }
+    .day-title { font-size: 1rem; padding-bottom: 8px; margin-bottom: 10px; }
+
+    /* Vue parents : 2 colonnes denses sur mobile */
+    .slot-grid {
+        grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+        gap: 8px;
+    }
+    .slot { padding: 12px 8px; min-height: 110px; }
+    .slot-time { font-size: 1.1rem; }
+    .slot-duration { display: block; margin-top: 2px; }
+    .slot-reserve-btn {
+        width: 100%;
+        padding: 10px 8px;
+        font-size: 0.92rem;
+    }
+
+    /* Vue admin : empile en cartes */
     .slot-row {
         grid-template-columns: 1fr;
-        gap: 6px;
+        gap: 8px;
+        padding: 12px;
     }
-    .slot-row-actions { justify-content: flex-start; }
-    .topbar { padding: 10px 14px; }
-    .container { padding: 16px 12px 40px; }
-    .day-card { padding: 14px; }
-    .kpi { padding: 10px 12px; }
+    .slot-row-actions {
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    .btn-sm { padding: 8px 14px; font-size: 0.9rem; }
+
+    .kpi { padding: 10px 12px; min-width: 90px; }
+    .kpi-num { font-size: 1.4rem; }
+    .kpi-lbl { font-size: 0.82rem; }
+
+    /* Formulaires admin : tout en colonne */
+    .hform { gap: 10px; }
+    .hform label { flex: 1 1 100%; }
+    .hform button { width: 100%; }
+
+    /* Modale plein écran (approx) */
+    .modal { width: 96%; max-width: none; margin: auto; }
+    .modal-form { padding: 18px; }
+
+    .auth-card { padding: 22px 18px; margin: 16px auto; }
+    .confirm-card { padding: 30px 18px; margin: 16px auto; }
+    .confirm-icon { font-size: 2.8rem; }
+
+    /* Tap targets confortables partout */
+    .btn { min-height: 42px; }
+    input, select, textarea { font-size: 16px; } /* évite le zoom iOS */
 }
