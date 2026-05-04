@@ -17,6 +17,13 @@
 
 * { box-sizing: border-box; }
 
+/* Fond explicite sur html pour éviter écran noir en mode standalone iOS
+   (au-delà du <body>, le <html> reste visible derrière le notch/safe area). */
+html {
+    background: #f8fafc;
+    -webkit-text-size-adjust: 100%;
+}
+
 html, body {
     margin: 0;
     padding: 0;
