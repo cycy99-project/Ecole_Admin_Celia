@@ -64,6 +64,17 @@ body {
     font-weight: 500;
     font-size: 0.95rem;
 }
+.install-btn {
+    background: var(--primary);
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+}
+.install-btn:hover { background: var(--primary-hover); text-decoration: none !important; }
 .nav-link:hover { text-decoration: underline; }
 .nav-discreet { color: var(--text-muted); }
 .inline-form { display: inline; margin: 0; }

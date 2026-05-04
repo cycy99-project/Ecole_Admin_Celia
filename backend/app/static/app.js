@@ -1,3 +1,37 @@
+// =====================================================================
+// PWA : enregistrement Service Worker + bouton "Installer l'app"
+// =====================================================================
+(function () {
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () { /* pas grave */ });
+        });
+    }
+
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        const btn = document.getElementById('pwaInstallBtn');
+        if (btn) {
+            btn.hidden = false;
+            btn.addEventListener('click', function () {
+                btn.hidden = true;
+                if (!deferredPrompt) return;
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.finally(function () { deferredPrompt = null; });
+            }, { once: true });
+        }
+    });
+    window.addEventListener('appinstalled', function () {
+        const btn = document.getElementById('pwaInstallBtn');
+        if (btn) btn.hidden = true;
+    });
+})();
+
+// =====================================================================
+// Modale de réservation parents
+// =====================================================================
 (function () {
     const dialog = document.getElementById('reserveDialog');
     const form = document.getElementById('reserveForm');

@@ -11,7 +11,8 @@
     <title>{% block title %}Rendez-vous parents{% endblock %}</title>
     <link rel="manifest" href="/static/manifest.webmanifest">
     <link rel="icon" type="image/svg+xml" href="/static/icon.svg">
-    <link rel="apple-touch-icon" href="/static/icon.svg">
+    <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
+    <link rel="apple-touch-icon" href="/static/icon-192.png">
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -21,6 +22,7 @@
             <span>Rendez-vous parents</span>
         </a>
         <nav>
+            <button type="button" id="pwaInstallBtn" class="nav-link install-btn" hidden title="Installer l'application sur cet appareil">📲 Installer</button>
             {% if user %}
                 <a href="/admin" class="nav-link">{% if user.is_super_admin %}Direction{% else %}Mon planning{% endif %}</a>
                 <form action="/admin/logout" method="post" class="inline-form">
@@ -37,6 +39,7 @@
     <footer class="footer">
         <small>Application de prise de rendez-vous parents-enseignant</small>
     </footer>
+    <script src="/static/app.js"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

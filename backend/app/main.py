@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import Optional, List
 
 from fastapi import FastAPI, Request, Depends, Form, HTTPException, status
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.exc import IntegrityError
@@ -32,6 +32,25 @@ STATIC_DIR = BASE_DIR / "static"
 app = FastAPI(title="RDV École", docs_url=None, redoc_url=None)
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+
+
+# Service Worker servi depuis la racine (scope = '/')
+@app.get("/sw.js", include_in_schema=False)
+def service_worker():
+    return FileResponse(
+        STATIC_DIR / "sw.js",
+        media_type="application/javascript",
+        headers={"Service-Worker-Allowed": "/", "Cache-Control": "no-cache"},
+    )
+
+
+# Manifest aussi exposé à la racine pour les implémentations qui scrutent /manifest.webmanifest
+@app.get("/manifest.webmanifest", include_in_schema=False)
+def manifest():
+    return FileResponse(
+        STATIC_DIR / "manifest.webmanifest",
+        media_type="application/manifest+json",
+    )
 
 USERNAME_RE = re.compile(r"^[a-z0-9_.-]{3,32}$")
 
