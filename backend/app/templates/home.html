@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Bienvenue{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Bienvenue</h1>
+    <p class="subtitle">Choisissez ce qui vous concerne ci-dessous.</p>
+</section>
+
+<div class="role-grid">
+    <a href="/parents" class="role-card role-parent">
+        <div class="role-icon">👨‍👩‍👧</div>
+        <div class="role-title">Je suis parent d'un élève</div>
+        <div class="role-desc">Réserver un rendez-vous avec l'enseignant·e de mon enfant.</div>
+        <div class="role-arrow">Continuer →</div>
+    </a>
+
+    <a href="/admin/login" class="role-card role-teacher">
+        <div class="role-icon">🍎</div>
+        <div class="role-title">Je suis enseignant·e</div>
+        <div class="role-desc">Me connecter pour gérer mon planning ou la plateforme.</div>
+        <div class="role-arrow">Se connecter →</div>
+    </a>
+</div>
+{% endblock %}

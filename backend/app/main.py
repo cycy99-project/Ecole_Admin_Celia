@@ -129,11 +129,23 @@ def _list_active_teachers(db: Session) -> List[User]:
 
 
 # =========================================================
-# Vue parents (publique)
+# Page d'accueil — choix du rôle (parent / enseignant)
 # =========================================================
 
 @app.get("/", response_class=HTMLResponse)
-def page_accueil(request: Request, db: Session = Depends(get_db)):
+def page_home(request: Request):
+    return templates.TemplateResponse(
+        "home.html",
+        {"request": request, "user": get_current_user(request)},
+    )
+
+
+# =========================================================
+# Vue parents (publique) — liste des enseignants
+# =========================================================
+
+@app.get("/parents", response_class=HTMLResponse)
+def page_parents_list(request: Request, db: Session = Depends(get_db)):
     teachers = _list_active_teachers(db)
     return templates.TemplateResponse(
         "accueil.html",
