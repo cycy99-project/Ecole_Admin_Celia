@@ -27,9 +27,7 @@
                     <div class="slot-time">{{ slot.start_at|heure }}<span class="slot-duration"> · {{ slot.duration_minutes }} min</span></div>
                     {% if slot.label %}<div class="slot-label">{{ slot.label }}</div>{% endif %}
                     {% if booked %}
-                        <div class="slot-booked-name">
-                            🔒 {{ slot.booking.child_first_name }} {{ slot.booking.child_last_name }}
-                        </div>
+                        <div class="slot-booked-name">🔒 Réservé</div>
                     {% else %}
                         <button type="button" class="btn btn-primary slot-reserve-btn"
                                 data-slot-id="{{ slot.id }}"
