@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Rendez-vous annulé{% endblock %}
+
+{% block content %}
+<section class="confirm-card">
+    <div class="confirm-icon">✅</div>
+    <h1>Rendez-vous annulé</h1>
+    <p>Le créneau a été libéré et est de nouveau proposé aux autres parents.</p>
+    <p class="muted small">Vous pouvez en réserver un autre si nécessaire.</p>
+    {% if teacher %}
+        <a href="/prof/{{ teacher.username }}" class="btn btn-primary">Voir d'autres créneaux de {{ teacher.display_name }}</a>
+    {% endif %}
+    <a href="/parents" class="btn btn-ghost">Retour à la liste des enseignants</a>
+</section>
+{% endblock %}

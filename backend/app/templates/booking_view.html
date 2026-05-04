@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Mon rendez-vous{% endblock %}
+
+{% block content %}
+<section class="confirm-card">
+    {% if is_future %}
+        <div class="confirm-icon">📅</div>
+        <h1>Votre rendez-vous</h1>
+    {% else %}
+        <div class="confirm-icon">🕓</div>
+        <h1>Rendez-vous passé</h1>
+    {% endif %}
+
+    <p class="confirm-line">
+        Élève : <strong>{{ booking.child_first_name }} {{ booking.child_last_name }}</strong>
+    </p>
+    <p class="confirm-line">
+        avec <strong>{{ teacher.display_name }}</strong>
+        {% if teacher.class_display %}<br><span class="muted small">{{ teacher.class_display }}</span>{% endif %}
+    </p>
+    <p class="confirm-line">
+        {{ slot.start_at|jour }}<br>
+        à <strong>{{ slot.start_at|heure }}</strong>
+        <span class="muted"> · {{ slot.duration_minutes }} min</span>
+    </p>
+    {% if slot.label %}<p class="muted small">{{ slot.label }}</p>{% endif %}
+
+    {% if is_future %}
+        <form method="post" action="/booking/{{ booking.token }}/cancel" class="vform"
+              onsubmit="return confirm('Êtes-vous sûr·e de vouloir annuler ce rendez-vous ? Le créneau redeviendra disponible pour un autre parent.');">
+            <button type="submit" class="btn btn-danger btn-wide">❌ Annuler ce rendez-vous</button>
+        </form>
+        <p class="muted small">Conservez précieusement ce lien : il vous permet de revenir voir ou d'annuler ce rendez-vous à tout moment.</p>
+    {% else %}
+        <p class="muted small">Ce rendez-vous est passé et ne peut plus être annulé.</p>
+    {% endif %}
+
+    <a href="/parents" class="btn btn-ghost">Retour à la liste des enseignants</a>
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Lien invalide{% endblock %}
+
+{% block content %}
+<section class="confirm-card error-card">
+    <div class="confirm-icon">⚠️</div>
+    <h1>Lien introuvable</h1>
+    <p>Cette réservation n'existe plus ou le lien est incorrect.</p>
+    <p class="muted small">Si vous aviez un rendez-vous, il a peut-être déjà été annulé.</p>
+    <a href="/parents" class="btn btn-primary">Voir les enseignants</a>
+</section>
+{% endblock %}

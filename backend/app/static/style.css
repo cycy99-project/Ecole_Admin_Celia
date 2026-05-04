@@ -495,6 +495,39 @@ code {
     font-size: 0.88em;
 }
 
+/* Permalink box (lien permanent du booking) */
+.permalink-box {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 18px 0;
+    text-align: left;
+}
+.permalink-title {
+    margin: 0 0 8px;
+    font-weight: 600;
+    color: var(--primary-hover);
+    font-size: 0.95rem;
+}
+.permalink-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #93c5fd;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: white;
+    margin-bottom: 8px;
+    word-break: break-all;
+}
+.permalink-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
 /* Misc */
 .muted { color: var(--text-muted); }
 .small { font-size: 0.85rem; }

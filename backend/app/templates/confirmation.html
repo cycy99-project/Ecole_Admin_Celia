@@ -9,11 +9,43 @@
         <strong>{{ booking.child_first_name }} {{ booking.child_last_name }}</strong>
     </p>
     <p class="confirm-line">
+        avec <strong>{{ teacher.display_name }}</strong>
+    </p>
+    <p class="confirm-line">
         {{ slot.start_at|jour }}<br>
         à <strong>{{ slot.start_at|heure }}</strong>
         <span class="muted"> · {{ slot.duration_minutes }} min</span>
     </p>
-    <p class="muted small">Pensez à noter cette information. Vous pouvez fermer cette page.</p>
+
+    <div class="permalink-box">
+        <p class="permalink-title">🔗 Conservez ce lien — il est unique et permet de revenir vérifier ou annuler ce rendez-vous :</p>
+        {% set booking_url = request.url_for('booking_view', token=booking.token) %}
+        <input type="text" id="permalinkInput" class="permalink-input" value="{{ booking_url }}" readonly onclick="this.select()">
+        <div class="permalink-actions">
+            <button type="button" class="btn btn-primary btn-sm" onclick="copyPermalink()">📋 Copier le lien</button>
+            <a href="{{ booking_url }}" class="btn btn-ghost btn-sm">Ouvrir</a>
+        </div>
+        <p class="muted small">
+            💡 Conseils : <strong>copiez-collez ce lien dans vos notes</strong>, envoyez-le par mail à vous-même, ou faites une capture d'écran de cette page.
+        </p>
+    </div>
+
     <a href="/parents" class="btn btn-ghost">Choisir un autre enseignant</a>
 </section>
+
+<script>
+function copyPermalink() {
+    var input = document.getElementById('permalinkInput');
+    input.select();
+    input.setSelectionRange(0, 99999);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(input.value).then(function () {
+            alert('Lien copié !');
+        });
+    } else {
+        try { document.execCommand('copy'); alert('Lien copié !'); }
+        catch (e) { alert('Impossible de copier automatiquement. Sélectionnez le lien et copiez-le manuellement.'); }
+    }
+}
+</script>
 {% endblock %}

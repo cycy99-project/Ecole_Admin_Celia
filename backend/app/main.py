@@ -77,12 +77,27 @@ def _migrate_add_missing_columns() -> None:
     """Ajoute les colonnes manquantes sur les tables existantes (SQLite ALTER TABLE simple).
     Idempotent : skip si la colonne est déjà là."""
     from sqlalchemy import text, inspect
+    from .models import _gen_booking_token
     insp = inspect(engine)
     if "users" in insp.get_table_names():
         cols = {c["name"] for c in insp.get_columns("users")}
         if "class_label" not in cols:
             with engine.begin() as conn:
                 conn.execute(text("ALTER TABLE users ADD COLUMN class_label VARCHAR(255)"))
+    if "bookings" in insp.get_table_names():
+        cols = {c["name"] for c in insp.get_columns("bookings")}
+        if "token" not in cols:
+            with engine.begin() as conn:
+                # SQLite ne supporte pas ADD COLUMN UNIQUE : on ajoute, on remplit, on indexe.
+                conn.execute(text("ALTER TABLE bookings ADD COLUMN token VARCHAR(40)"))
+                # Génère un token pour chaque ligne existante
+                rows = conn.execute(text("SELECT id FROM bookings WHERE token IS NULL")).fetchall()
+                for (booking_id,) in rows:
+                    conn.execute(
+                        text("UPDATE bookings SET token = :tok WHERE id = :id"),
+                        {"tok": _gen_booking_token(), "id": booking_id},
+                    )
+                conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_bookings_token ON bookings(token)"))
 
 
 @app.on_event("startup")
@@ -219,6 +234,48 @@ def reserver(
     return templates.TemplateResponse(
         "confirmation.html",
         {"request": request, "slot": slot, "booking": booking, "teacher": teacher},
+    )
+
+
+# =========================================================
+# Vérification / annulation par lien permanent (sans compte)
+# =========================================================
+
+@app.get("/booking/{token}", response_class=HTMLResponse)
+def booking_view(token: str, request: Request, db: Session = Depends(get_db)):
+    booking = db.query(Booking).filter(Booking.token == token).first()
+    if not booking:
+        return templates.TemplateResponse(
+            "booking_introuvable.html",
+            {"request": request, "user": get_current_user(request)},
+            status_code=404,
+        )
+    return templates.TemplateResponse(
+        "booking_view.html",
+        {
+            "request": request,
+            "booking": booking,
+            "slot": booking.slot,
+            "teacher": booking.slot.teacher,
+            "is_future": booking.slot.start_at > datetime.now(),
+            "user": get_current_user(request),
+        },
+    )
+
+
+@app.post("/booking/{token}/cancel")
+def booking_cancel(token: str, request: Request, db: Session = Depends(get_db)):
+    booking = db.query(Booking).filter(Booking.token == token).first()
+    if not booking:
+        raise HTTPException(status_code=404, detail="Réservation introuvable")
+    if booking.slot.start_at <= datetime.now():
+        raise HTTPException(status_code=400, detail="Impossible d'annuler un RDV passé")
+    teacher = booking.slot.teacher
+    db.delete(booking)
+    db.commit()
+    return templates.TemplateResponse(
+        "booking_annule.html",
+        {"request": request, "teacher": teacher, "user": get_current_user(request)},
     )
 
 

@@ -77,6 +77,11 @@ class Slot(Base):
         return self.booking is not None
 
 
+def _gen_booking_token() -> str:
+    import secrets
+    return secrets.token_urlsafe(16)  # ~22 caractères URL-safe, non guessable
+
+
 class Booking(Base):
     __tablename__ = "bookings"
     __table_args__ = (UniqueConstraint("slot_id", name="uq_booking_slot"),)
@@ -86,6 +91,7 @@ class Booking(Base):
     child_first_name = Column(String(100), nullable=False)
     child_last_name = Column(String(100), nullable=False)
     parent_note = Column(String(255), nullable=True)
+    token = Column(String(40), unique=True, nullable=False, index=True, default=_gen_booking_token)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
     slot = relationship("Slot", back_populates="booking")
