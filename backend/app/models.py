@@ -34,6 +34,7 @@ class User(Base):
     must_change_password = Column(Boolean, default=False, nullable=False)
     role = Column(String(20), nullable=False, default=ROLE_TEACHER)
     class_level = Column(String(20), nullable=True)
+    class_label = Column(String(255), nullable=True)  # libellé libre, prioritaire à l'affichage
     is_active = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
@@ -48,7 +49,10 @@ class User(Base):
         return self.full_name or self.username
 
     @property
-    def class_label(self) -> str:
+    def class_display(self) -> str:
+        """Libellé affiché : class_label si renseigné, sinon le libellé standard du niveau."""
+        if self.class_label:
+            return self.class_label
         return CLASS_LEVEL_LABELS.get(self.class_level, self.class_level or "")
 
 

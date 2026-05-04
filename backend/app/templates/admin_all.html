@@ -18,7 +18,7 @@
     <section class="day-card">
         <h2 class="day-title">
             {{ p.teacher.display_name }}
-            {% if p.teacher.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[p.teacher.class_level] }}</span>{% endif %}
+            {% if p.teacher.class_display %}<span class="badge">{{ p.teacher.class_display }}</span>{% endif %}
             <span class="muted small" style="float:right">{{ p.nb_reserved }} / {{ p.nb_total }} réservés</span>
         </h2>
         {% if not p.days %}

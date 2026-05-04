@@ -18,7 +18,7 @@
                 <div class="teacher-avatar">{{ (t.full_name or t.username)[0]|upper }}</div>
                 <div class="teacher-info">
                     <div class="teacher-name">{{ t.display_name }}</div>
-                    {% if t.class_level %}<div class="teacher-class">{{ CLASS_LEVEL_LABELS[t.class_level] }}</div>{% endif %}
+                    {% if t.class_display %}<div class="teacher-class">{{ t.class_display }}</div>{% endif %}
                 </div>
                 <div class="teacher-arrow">→</div>
             </a>

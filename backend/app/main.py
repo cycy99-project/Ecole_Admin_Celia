@@ -73,9 +73,22 @@ templates.env.globals["CLASS_LEVELS"] = CLASS_LEVELS
 templates.env.globals["CLASS_LEVEL_LABELS"] = CLASS_LEVEL_LABELS
 
 
+def _migrate_add_missing_columns() -> None:
+    """Ajoute les colonnes manquantes sur les tables existantes (SQLite ALTER TABLE simple).
+    Idempotent : skip si la colonne est déjà là."""
+    from sqlalchemy import text, inspect
+    insp = inspect(engine)
+    if "users" in insp.get_table_names():
+        cols = {c["name"] for c in insp.get_columns("users")}
+        if "class_label" not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE users ADD COLUMN class_label VARCHAR(255)"))
+
+
 @app.on_event("startup")
 def on_startup() -> None:
     Base.metadata.create_all(bind=engine)
+    _migrate_add_missing_columns()
     db = SessionLocal()
     try:
         seed_default_super_admin(db)
@@ -479,11 +492,13 @@ def admin_teachers_create(
     username: str = Form(...),
     full_name: str = Form(""),
     class_level: str = Form(...),
+    class_label: str = Form(""),
     db: Session = Depends(get_db),
     user: User = Depends(require_super_admin),
 ):
     username = username.strip().lower()
     full_name = full_name.strip()
+    class_label_clean = (class_label.strip() or None) if class_label else None
 
     if not USERNAME_RE.match(username):
         teachers = db.query(User).filter(User.role == ROLE_TEACHER).order_by(User.username.asc()).all()
@@ -513,11 +528,34 @@ def admin_teachers_create(
         must_change_password=True,
         role=ROLE_TEACHER,
         class_level=class_level,
+        class_label=class_label_clean,
         is_active=True,
     )
     db.add(teacher)
     db.commit()
     return RedirectResponse(url="/admin/teachers", status_code=303)
+
+
+@app.post("/admin/me")
+def admin_update_me(
+    request: Request,
+    class_level: Optional[str] = Form(None),
+    class_label: str = Form(""),
+    full_name: Optional[str] = Form(None),
+    db: Session = Depends(get_db),
+    user: User = Depends(require_user),
+):
+    """Permet à un enseignant (ou super-admin) de modifier son libellé de classe et nom affiché."""
+    if class_level is not None and class_level != "" and class_level not in CLASS_LEVEL_KEYS:
+        raise HTTPException(status_code=400, detail="Classe invalide")
+    if class_level:
+        user.class_level = class_level
+    user.class_label = (class_label.strip() or None) if class_label else None
+    if full_name is not None:
+        user.full_name = full_name.strip() or None
+    db.add(user)
+    db.commit()
+    return RedirectResponse(url="/admin", status_code=303)
 
 
 @app.post("/admin/teachers/{teacher_id}/delete")

@@ -5,7 +5,7 @@
 <section class="hero">
     <a href="/" class="back-link">← Changer d'enseignant</a>
     <h1>{{ teacher.display_name }}</h1>
-    {% if teacher.class_level %}<p class="subtitle">{{ CLASS_LEVEL_LABELS[teacher.class_level] }}</p>{% endif %}
+    {% if teacher.class_display %}<p class="subtitle">{{ teacher.class_display }}</p>{% endif %}
     <p class="subtitle">Choisissez un créneau libre puis renseignez le prénom et le nom de votre enfant.</p>
 </section>
 

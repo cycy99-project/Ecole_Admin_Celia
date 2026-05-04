@@ -30,8 +30,13 @@
                     {% endfor %}
                 </select>
             </label>
+            <label>Libellé personnalisé (optionnel)
+                <input type="text" name="class_label" maxlength="255"
+                       placeholder='ex: "Classe à double niveau CM1/CM2"'>
+            </label>
             <button type="submit" class="btn btn-primary">Créer</button>
         </form>
+        <p class="muted small">Le libellé personnalisé remplace l'affichage standard du niveau partout dans l'app. Laissez vide pour afficher le libellé standard. L'enseignant·e pourra le modifier elle-même.</p>
         <p class="muted small">Mot de passe par défaut : <code>{{ default_password }}</code> — l'enseignant·e devra le changer à sa 1ère connexion.</p>
     </details>
 </section>
@@ -49,7 +54,7 @@
                         <span class="muted small"> · @{{ t.username }}</span>
                     </div>
                     <div class="slot-row-status">
-                        {% if t.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[t.class_level] }}</span>{% endif %}
+                        {% if t.class_display %}<span class="badge">{{ t.class_display }}</span>{% endif %}
                         {% if t.must_change_password %}<span class="status status-booked">⚠️ mdp par défaut</span>{% endif %}
                     </div>
                     <div class="slot-row-actions">

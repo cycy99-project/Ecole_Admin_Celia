@@ -30,7 +30,7 @@
                         <span class="muted small"> · @{{ t.username }}</span>
                     </div>
                     <div class="slot-row-status">
-                        {% if t.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[t.class_level] }}</span>{% endif %}
+                        {% if t.class_display %}<span class="badge">{{ t.class_display }}</span>{% endif %}
                         {% if not t.is_active %}<span class="status status-booked">Inactif</span>{% endif %}
                     </div>
                     <div class="slot-row-actions">
