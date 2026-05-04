@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Direction — Tableau de bord{% endblock %}
+
+{% block content %}
+<section class="hero hero-admin">
+    <h1>Direction</h1>
+    <p class="subtitle">Bienvenue {{ user.display_name }}. Gérez les enseignants et consultez les plannings.</p>
+    <div class="kpis">
+        <div class="kpi"><span class="kpi-num">{{ nb_active }}</span><span class="kpi-lbl">enseignants actifs</span></div>
+        <div class="kpi"><span class="kpi-num">{{ nb_slots }}</span><span class="kpi-lbl">créneaux total</span></div>
+        <div class="kpi kpi-warn"><span class="kpi-num">{{ nb_bookings }}</span><span class="kpi-lbl">réservations</span></div>
+    </div>
+    <div class="admin-actions">
+        <a href="/admin/teachers" class="btn btn-primary">👥 Gérer les enseignants</a>
+        <a href="/admin/all" class="btn btn-primary">📅 Voir tous les plannings</a>
+        <a href="/admin/password" class="btn btn-ghost">Changer mon mot de passe</a>
+    </div>
+</section>
+
+<section class="day-card">
+    <h2 class="day-title">Enseignants enregistrés</h2>
+    {% if not teachers %}
+        <p class="muted">Aucun enseignant pour le moment. <a href="/admin/teachers">Ajoutez-en</a>.</p>
+    {% else %}
+        <div class="slot-list">
+            {% for t in teachers %}
+                <div class="slot-row {% if not t.is_active %}is-booked{% endif %}">
+                    <div class="slot-row-time">
+                        <strong>{{ t.display_name }}</strong>
+                        <span class="muted small"> · @{{ t.username }}</span>
+                    </div>
+                    <div class="slot-row-status">
+                        {% if t.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[t.class_level] }}</span>{% endif %}
+                        {% if not t.is_active %}<span class="status status-booked">Inactif</span>{% endif %}
+                    </div>
+                    <div class="slot-row-actions">
+                        <a href="/prof/{{ t.username }}" class="btn btn-ghost btn-sm" target="_blank">Lien parents</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,16 +1,18 @@
 {% extends "base.html" %}
-{% block title %}Réserver un rendez-vous{% endblock %}
+{% block title %}Réserver — {{ teacher.display_name }}{% endblock %}
 
 {% block content %}
 <section class="hero">
-    <h1>Prendre un rendez-vous</h1>
-    <p class="subtitle">Choisissez un créneau libre dans le planning ci-dessous puis renseignez le prénom et le nom de votre enfant.</p>
+    <a href="/" class="back-link">← Changer d'enseignant</a>
+    <h1>{{ teacher.display_name }}</h1>
+    {% if teacher.class_level %}<p class="subtitle">{{ CLASS_LEVEL_LABELS[teacher.class_level] }}</p>{% endif %}
+    <p class="subtitle">Choisissez un créneau libre puis renseignez le prénom et le nom de votre enfant.</p>
 </section>
 
 {% if not days %}
     <div class="empty-state">
         <p>Aucun créneau n'est proposé pour le moment.</p>
-        <p>L'enseignante publiera prochainement de nouvelles disponibilités.</p>
+        <p>L'enseignant·e publiera prochainement de nouvelles disponibilités.</p>
     </div>
 {% endif %}
 
@@ -31,6 +33,7 @@
                     {% else %}
                         <button type="button" class="btn btn-primary slot-reserve-btn"
                                 data-slot-id="{{ slot.id }}"
+                                data-action="/prof/{{ teacher.username }}/reserver/{{ slot.id }}"
                                 data-slot-time="{{ slot.start_at|heure }}"
                                 data-slot-day="{{ day.label }}">
                             Réserver
@@ -46,6 +49,7 @@
     <form method="post" id="reserveForm" class="modal-form">
         <h3>Confirmer la réservation</h3>
         <p class="modal-subtitle">
+            avec <strong>{{ teacher.display_name }}</strong><br>
             <strong id="dlgDay"></strong> à <strong id="dlgTime"></strong>
         </p>
         <label>

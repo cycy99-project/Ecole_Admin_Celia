@@ -1,0 +1,17 @@
+# Bloc Caddy à AJOUTER au Caddyfile existant de Cycymulator
+# (/srv/cycymulator/deploy/hetzner/Caddyfile) puis recharger Caddy avec :
+#   cd /srv/cycymulator/deploy/hetzner
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile
+#
+# Caddy obtiendra automatiquement un certificat Let's Encrypt pour
+# rdv-celia.duckdns.org (à condition que le DNS pointe sur l'IP du VPS).
+
+rdv-celia.duckdns.org {
+    reverse_proxy ecole-celia:8000
+    encode gzip zstd
+    header {
+        Strict-Transport-Security "max-age=31536000;"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}

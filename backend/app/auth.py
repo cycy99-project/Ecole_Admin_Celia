@@ -8,15 +8,19 @@ from itsdangerous import URLSafeSerializer, BadSignature
 from sqlalchemy.orm import Session
 
 from .database import SessionLocal
-from .models import Admin
+from .models import User, ROLE_SUPER_ADMIN
 
-DEFAULT_ADMIN_USERNAME = "prof"
-DEFAULT_ADMIN_PASSWORD = "PROF2026"
+DEFAULT_SUPER_ADMIN_USERNAME = "prof"
+DEFAULT_SUPER_ADMIN_PASSWORD = "PROF2026"
+DEFAULT_TEACHER_PASSWORD = "Bienvenue123"
 COOKIE_NAME = "rdv_session"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 7  # 7 jours
 
-_secret_path = os.path.join(os.path.dirname(__file__), "..", "..", "data", ".secret")
-_secret_path = os.path.abspath(_secret_path)
+# Cookie sécurisé en production (HTTPS via Caddy). Activé via env COOKIE_SECURE=1.
+COOKIE_SECURE = os.environ.get("COOKIE_SECURE", "0") == "1"
+
+from .database import DATA_DIR
+_secret_path = str(DATA_DIR / ".secret")
 
 
 def _get_or_create_secret() -> str:
@@ -50,52 +54,66 @@ def verify_password(password: str, password_hash: str) -> bool:
         return False
 
 
-def make_session_token(admin_id: int) -> str:
-    return serializer.dumps({"admin_id": admin_id})
+def make_session_token(user_id: int) -> str:
+    return serializer.dumps({"user_id": user_id})
 
 
 def read_session_token(token: str) -> Optional[int]:
     try:
         data = serializer.loads(token)
-        return int(data["admin_id"])
+        return int(data["user_id"])
     except (BadSignature, KeyError, ValueError, TypeError):
         return None
 
 
-def get_current_admin(request: Request) -> Optional[Admin]:
+def get_current_user(request: Request) -> Optional[User]:
     token = request.cookies.get(COOKIE_NAME)
     if not token:
         return None
-    admin_id = read_session_token(token)
-    if admin_id is None:
+    user_id = read_session_token(token)
+    if user_id is None:
         return None
     db: Session = SessionLocal()
     try:
-        return db.get(Admin, admin_id)
+        user = db.get(User, user_id)
+        if user and not user.is_active:
+            return None
+        return user
     finally:
         db.close()
 
 
-def require_admin(request: Request) -> Admin:
-    admin = get_current_admin(request)
-    if admin is None:
+def require_user(request: Request) -> User:
+    user = get_current_user(request)
+    if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentification requise",
         )
-    return admin
+    return user
 
 
-def seed_default_admin(db: Session) -> None:
-    existing = db.query(Admin).filter(Admin.username == DEFAULT_ADMIN_USERNAME).first()
+def require_super_admin(request: Request) -> User:
+    user = require_user(request)
+    if not user.is_super_admin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Accès super-admin requis")
+    return user
+
+
+def seed_default_super_admin(db: Session) -> None:
+    existing = db.query(User).filter(User.username == DEFAULT_SUPER_ADMIN_USERNAME).first()
     if existing:
         return
-    if db.query(Admin).count() > 0:
+    if db.query(User).count() > 0:
         return
-    admin = Admin(
-        username=DEFAULT_ADMIN_USERNAME,
-        password_hash=hash_password(DEFAULT_ADMIN_PASSWORD),
+    user = User(
+        username=DEFAULT_SUPER_ADMIN_USERNAME,
+        full_name="Direction",
+        password_hash=hash_password(DEFAULT_SUPER_ADMIN_PASSWORD),
         must_change_password=True,
+        role=ROLE_SUPER_ADMIN,
+        class_level=None,
+        is_active=True,
     )
-    db.add(admin)
+    db.add(user)
     db.commit()

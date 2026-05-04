@@ -12,7 +12,7 @@
             const slotId = btn.dataset.slotId;
             const slotTime = btn.dataset.slotTime;
             const slotDay = btn.dataset.slotDay;
-            form.action = '/reserver/' + slotId;
+            form.action = btn.dataset.action || ('/reserver/' + slotId);
             if (dlgTime) dlgTime.textContent = slotTime;
             if (dlgDay) dlgDay.textContent = slotDay;
             const firstInput = form.querySelector('input[name="child_first_name"]');

@@ -21,8 +21,8 @@
             <span>Rendez-vous parents</span>
         </a>
         <nav>
-            {% if admin %}
-                <a href="/admin" class="nav-link">Tableau de bord</a>
+            {% if user %}
+                <a href="/admin" class="nav-link">{% if user.is_super_admin %}Direction{% else %}Mon planning{% endif %}</a>
                 <form action="/admin/logout" method="post" class="inline-form">
                     <button type="submit" class="link-btn">Se déconnecter</button>
                 </form>

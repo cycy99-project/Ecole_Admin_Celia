@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Gestion des enseignants{% endblock %}
+
+{% block content %}
+<section class="hero hero-admin">
+    <a href="/admin" class="back-link">← Retour au tableau de bord</a>
+    <h1>Enseignants</h1>
+    <p class="subtitle">Créer, supprimer ou réinitialiser le mot de passe des enseignants.</p>
+</section>
+
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+<section class="admin-add">
+    <details open>
+        <summary><strong>➕ Ajouter un enseignant</strong></summary>
+        <form method="post" action="/admin/teachers" class="hform">
+            <label>Identifiant (login)
+                <input type="text" name="username" required minlength="3" maxlength="32"
+                       pattern="[a-z0-9_.\-]+" placeholder="ex: celia.dupont"
+                       title="Minuscules, chiffres, _ . - uniquement (3-32 caractères)">
+            </label>
+            <label>Nom complet (affiché)
+                <input type="text" name="full_name" maxlength="120" placeholder="ex: Mme Célia Dupont">
+            </label>
+            <label>Classe
+                <select name="class_level" required>
+                    <option value="">— Choisir —</option>
+                    {% for key, label in CLASS_LEVELS %}
+                        <option value="{{ key }}">{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="btn btn-primary">Créer</button>
+        </form>
+        <p class="muted small">Mot de passe par défaut : <code>{{ default_password }}</code> — l'enseignant·e devra le changer à sa 1ère connexion.</p>
+    </details>
+</section>
+
+<section class="day-card">
+    <h2 class="day-title">Liste des enseignants</h2>
+    {% if not teachers %}
+        <div class="empty-state"><p>Aucun enseignant enregistré.</p></div>
+    {% else %}
+        <div class="slot-list">
+            {% for t in teachers %}
+                <div class="slot-row {% if not t.is_active %}is-booked{% endif %}">
+                    <div class="slot-row-time">
+                        <strong>{{ t.display_name }}</strong>
+                        <span class="muted small"> · @{{ t.username }}</span>
+                    </div>
+                    <div class="slot-row-status">
+                        {% if t.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[t.class_level] }}</span>{% endif %}
+                        {% if t.must_change_password %}<span class="status status-booked">⚠️ mdp par défaut</span>{% endif %}
+                    </div>
+                    <div class="slot-row-actions">
+                        <a href="/prof/{{ t.username }}" class="btn btn-ghost btn-sm" target="_blank">Voir le planning public</a>
+                        <form method="post" action="/admin/teachers/{{ t.id }}/reset-password" onsubmit="return confirm('Réinitialiser le mot de passe de {{ t.display_name }} à « {{ default_password }} » ?');">
+                            <button type="submit" class="btn btn-ghost btn-sm">🔁 Réinit. mdp</button>
+                        </form>
+                        <form method="post" action="/admin/teachers/{{ t.id }}/delete" onsubmit="return confirm('Supprimer DÉFINITIVEMENT {{ t.display_name }} et tous ses créneaux/réservations ?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

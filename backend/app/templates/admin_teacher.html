@@ -1,10 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Tableau de bord{% endblock %}
+{% block title %}Mon planning — {{ user.display_name }}{% endblock %}
 
 {% block content %}
 <section class="hero hero-admin">
-    <h1>Tableau de bord</h1>
-    <p class="subtitle">Bienvenue {{ admin.username }}. Gérez ici vos créneaux et les réservations des parents.</p>
+    <h1>{{ user.display_name }}</h1>
+    {% if user.class_level %}<p class="subtitle">{{ CLASS_LEVEL_LABELS[user.class_level] }}</p>{% endif %}
+    <p class="subtitle muted">Lien public à partager aux parents : <code>/prof/{{ user.username }}</code></p>
     <div class="kpis">
         <div class="kpi"><span class="kpi-num">{{ nb_total }}</span><span class="kpi-lbl">créneaux</span></div>
         <div class="kpi kpi-ok"><span class="kpi-num">{{ nb_libres }}</span><span class="kpi-lbl">libres</span></div>
@@ -37,7 +38,7 @@
             <label>Libellé (optionnel)<input type="text" name="label" maxlength="255" placeholder="Ex: salle B"></label>
             <button type="submit" class="btn btn-primary">Générer</button>
         </form>
-        <p class="muted small">Crée des créneaux consécutifs entre les deux heures (existants ignorés). Le libellé est appliqué à tous les nouveaux créneaux.</p>
+        <p class="muted small">Crée des créneaux consécutifs entre les deux heures (existants ignorés).</p>
     </details>
 </section>
 

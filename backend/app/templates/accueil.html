@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Choisir un enseignant{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Prendre un rendez-vous</h1>
+    <p class="subtitle">Choisissez l'enseignant·e de votre enfant pour voir les créneaux disponibles.</p>
+</section>
+
+{% if not teachers %}
+    <div class="empty-state">
+        <p>Aucun enseignant n'est encore inscrit sur la plateforme.</p>
+    </div>
+{% else %}
+    <div class="teacher-grid">
+        {% for t in teachers %}
+            <a href="/prof/{{ t.username }}" class="teacher-card">
+                <div class="teacher-avatar">{{ (t.full_name or t.username)[0]|upper }}</div>
+                <div class="teacher-info">
+                    <div class="teacher-name">{{ t.display_name }}</div>
+                    {% if t.class_level %}<div class="teacher-class">{{ CLASS_LEVEL_LABELS[t.class_level] }}</div>{% endif %}
+                </div>
+                <div class="teacher-arrow">→</div>
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

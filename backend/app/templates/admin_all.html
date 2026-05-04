@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Plannings de tous les enseignants{% endblock %}
+
+{% block content %}
+<section class="hero hero-admin">
+    <a href="/admin" class="back-link">← Retour au tableau de bord</a>
+    <h1>Plannings de tous les enseignants</h1>
+    <p class="subtitle">Vue consolidée — lecture seule. Pour modifier, l'enseignant·e doit se connecter à son propre compte.</p>
+</section>
+
+{% if not plannings %}
+    <div class="empty-state">
+        <p>Aucun enseignant actif. <a href="/admin/teachers">Ajoutez-en</a>.</p>
+    </div>
+{% endif %}
+
+{% for p in plannings %}
+    <section class="day-card">
+        <h2 class="day-title">
+            {{ p.teacher.display_name }}
+            {% if p.teacher.class_level %}<span class="badge">{{ CLASS_LEVEL_LABELS[p.teacher.class_level] }}</span>{% endif %}
+            <span class="muted small" style="float:right">{{ p.nb_reserved }} / {{ p.nb_total }} réservés</span>
+        </h2>
+        {% if not p.days %}
+            <p class="muted small">Aucun créneau publié.</p>
+        {% else %}
+            {% for day in p.days %}
+                <div class="subday">
+                    <h3 class="subday-title">{{ day.label }}</h3>
+                    <div class="slot-list">
+                        {% for slot in day.slots %}
+                            <div class="slot-row {% if slot.is_booked %}is-booked{% endif %}">
+                                <div class="slot-row-time">
+                                    {{ slot.start_at|heure }}
+                                    <span class="muted small"> · {{ slot.duration_minutes }} min</span>
+                                    {% if slot.label %}<span class="badge">{{ slot.label }}</span>{% endif %}
+                                </div>
+                                <div class="slot-row-status">
+                                    {% if slot.is_booked %}
+                                        <span class="status status-booked">Réservé : <strong>{{ slot.booking.child_first_name }} {{ slot.booking.child_last_name }}</strong></span>
+                                    {% else %}
+                                        <span class="status status-free">Libre</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </section>
+{% endfor %}
+{% endblock %}

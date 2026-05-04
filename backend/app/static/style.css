@@ -363,6 +363,81 @@ input:focus {
     color: var(--text-muted);
 }
 
+/* Teacher cards (page accueil parents) */
+.teacher-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+.teacher-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--text);
+    box-shadow: var(--shadow);
+    transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s;
+}
+.teacher-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--primary);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.15);
+}
+.teacher-avatar {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+.teacher-info { flex: 1; min-width: 0; }
+.teacher-name { font-weight: 600; font-size: 1.05rem; }
+.teacher-class { color: var(--text-muted); font-size: 0.88rem; margin-top: 2px; }
+.teacher-arrow { color: var(--primary); font-size: 1.4rem; }
+
+.back-link {
+    display: inline-block;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    margin-bottom: 8px;
+}
+.back-link:hover { color: var(--primary); }
+
+.subday { margin-top: 14px; }
+.subday-title {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+select {
+    padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: white;
+}
+code {
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+}
+
 /* Misc */
 .muted { color: var(--text-muted); }
 .small { font-size: 0.85rem; }

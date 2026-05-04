@@ -1,0 +1,37 @@
+# Ecole_Admin_Celia — docker-compose pour Hetzner VPS (mutualisé avec Cycymulator)
+# Lancement : depuis ce dossier, `docker compose up -d`
+#
+# Le service rejoint le réseau externe `hetzner_web` partagé avec le Caddy
+# de Cycymulator, qui le reverse-proxie depuis https://rdv-celia.duckdns.org.
+
+name: ecole-celia
+
+services:
+  ecole-celia:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    image: ecole-celia:latest
+    container_name: ecole-celia
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - ../../data:/app/data
+    environment:
+      TZ: Europe/Paris
+      RDV_DATA_DIR: /app/data
+      COOKIE_SECURE: "1"
+    networks:
+      - web
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8000/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  web:
+    external: true
+    name: hetzner_web
